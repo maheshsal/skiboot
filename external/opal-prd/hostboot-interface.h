@@ -277,7 +277,34 @@ struct host_interfaces {
 	int (*memory_error)( uint64_t i_startAddr, uint64_t i_endAddr,
 					  enum MemoryError_t i_errorType );
 
+	/**
+	 * @brief Modify the SCOM restore section of the SLW image with the
+	 * given register data
+	 *
+	 * The Hypervisor should perform the following actions:
+	 *	- put the specified core into special wakeup
+	 *	- insert the data into the slw image (p8_pore_gen_scom_fixed)
+	 *	- deassert special wakeup
+	 *
+	 * @param  i_core      Core section to update
+	 * @param  i_section   Runtime section to update (passthru to
+	 *	               pore_gen_scom)
+	 * @param  i_operation Type of operation to perform (passthru to
+	 *                     pore_gen_scom)
+	 * @param  i_scomAddr  Fully qualified scom address
+	 * @param  i_scomData  Data for operation
+	 *
+	 * @return 0 if the request is successfully received. Any value
+	 *           other than 0 on failure.
+	 */
+	int (*slw_update) (uint64_t i_core,
+			   uint32_t i_section,
+			   uint32_t i_operation,
+			   uint64_t i_scomAddr,
+			   uint64_t i_scomData);
 
+	/* Reserve some space for future growth. */
+	void (*reserved[32])(void);
 };
 
 struct runtime_interfaces {
