@@ -2021,6 +2021,7 @@ void occ_pstates_init(void)
 		break;
 	case proc_gen_p9:
 	case proc_gen_p10:
+	case proc_gen_p11:
 		homer_opal_data_offset = P9_HOMER_OPAL_DATA_OFFSET;
 		break;
 	default:
@@ -2083,7 +2084,7 @@ void occ_pstates_init(void)
 	} else if (proc_gen == proc_gen_p9) {
 		freq_domain_mask = P9_PIR_QUAD_MASK;
 		domain_runs_at = FREQ_MAX_IN_DOMAIN;
-	} else if (proc_gen == proc_gen_p10) {
+	} else if (proc_gen == proc_gen_p10 || proc_gen == proc_gen_p11) {
 		freq_domain_mask = P10_PIR_CHIP_MASK;
 		domain_runs_at = FREQ_MAX_IN_DOMAIN;
 	} else {
@@ -2258,6 +2259,7 @@ void occ_send_dummy_interrupt(void)
 			    OCB_OCI_OCIMISC_IRQ_OPAL_DUMMY);
 		break;
 	case proc_gen_p10:
+	case proc_gen_p11:
 		xscom_write(psi->chip_id, P9_OCB_OCI_OCCMISC_OR,
 			    OCB_OCI_OCIMISC_IRQ |
 			    OCB_OCI_OCIMISC_IRQ_OPAL_DUMMY);

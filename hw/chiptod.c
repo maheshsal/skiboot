@@ -1026,7 +1026,7 @@ static void fixup_tod_reg_value(struct chiptod_tod_regs *treg_entry)
 {
 	int32_t chip_id = this_cpu()->chip_id;
 
-	if (proc_gen != proc_gen_p10)
+	if (proc_gen != proc_gen_p10 && proc_gen != proc_gen_p11)
 		return;
 
 	if (treg_entry->xscom_addr == TOD_SLAVE_PATH_CTRL)
