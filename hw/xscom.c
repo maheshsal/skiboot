@@ -841,11 +841,26 @@ int64_t xscom_read_cfam_chipid(uint32_t partid, uint32_t *chip_id)
 	return rc;
 }
 
+static inline int8_t get_proc_gen_num(void)
+{
+	switch (proc_gen) {
+	case proc_gen_p9:
+		return 9;
+	case proc_gen_p10:
+		return 10;
+	case proc_gen_p11:
+		return 11;
+	default:
+		return -1;
+	}
+}
+
 /* The recipe comes from the p10_getecid hardware procedure */
 static uint8_t xscom_get_ec_rev(struct proc_chip *chip)
 {
 	uint64_t ecid2 = 0;
 	int8_t rev;
+	int8_t proc_gen_num;
 	const int8_t *table;
 	/*                             0   1   2   3   4   5   6   7 */
 	const int8_t p9table[8] =     {0,  1, -1,  2, -1, -1, -1,  3};
@@ -876,11 +891,13 @@ static uint8_t xscom_get_ec_rev(struct proc_chip *chip)
 	if (rev < 0)
 		return 0;
 
-	prlog(PR_INFO, "P%d DD%i.%i%d detected\n",
-			proc_gen == proc_gen_p9 ? 9 : 10,
-			0xf & (chip->ec_level >> 4),
-			chip->ec_level & 0xf,
-			rev);
+	proc_gen_num = get_proc_gen_num();
+	if (proc_gen_num < 0)
+		prlog(PR_INFO, "Unknown Power processor detected\n");
+	else
+		prlog(PR_INFO, "P%d DD%i.%i%d detected\n", proc_gen_num,
+				0xf & (chip->ec_level >> 4),
+				chip->ec_level & 0xf, rev);
 
 	return rev;
 }
@@ -980,7 +997,7 @@ void xscom_init(void)
 		const char *chip_name;
 		static const char *chip_names[] = {
 			"UNKNOWN", "P8E", "P8", "P8NVL", "P9N", "P9C", "P9P",
-			"P10",
+			"P10", "P11",
 		};
 
 		chip = get_chip(gcid);
